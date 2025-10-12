@@ -1,0 +1,13 @@
+# Compiled files
+*.o
+*.obj
+*.exe
+*.out
+
+# SDL build cache
+build/
+bin/
+
+# Mac/Linux junk
+.DS_Store
+*.swp
