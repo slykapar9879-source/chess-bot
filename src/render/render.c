@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 
 #include "render.h"
+#include "assets.h"
 
 typedef struct
 {
@@ -20,6 +21,13 @@ int render_init()
     return -1;
   }
 
+  int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG;
+  if (!(IMG_Init(imgFlags) & imgFlags)) {
+    printf("IMG Init failed: %s\n", IMG_GetError());
+    SDL_Quit();
+    return -1;
+  }
+
   SDL_Window* window = SDL_CreateWindow("Chess Bot",
                                         SDL_WINDOWPOS_CENTERED,
                                         SDL_WINDOWPOS_CENTERED,
@@ -29,18 +37,20 @@ int render_init()
   if(!window)
   {
     printf("Error while creating window: %s\n", SDL_GetError());
+    IMG_Quit();
     SDL_Quit();
     return -1;
   }
 
   SDL_Renderer* renderer = SDL_CreateRenderer(window,
                                               -1,
-                                              SDL_RENDERER_ACCELERATED);
+                                              SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
   if(!renderer)
   {
     printf("Error while creating renderer: %s\n", SDL_GetError());
     SDL_DestroyWindow(window);
+    IMG_Quit();
     SDL_Quit();
     return -1;
   }
@@ -49,7 +59,17 @@ int render_init()
   render.render_obj = renderer;
   render.background_color = (rgb_t){ 0, 0, 0 };
 
+  assets_init_textures(render.render_obj);
+
   return 0;
+}
+
+void render_quit()
+{
+  SDL_DestroyRenderer(render.render_obj);
+  SDL_DestroyWindow(render.window_obj);
+  IMG_Quit();
+  SDL_Quit();
 }
 
 void render_fill_rect(rect_t rect, rgb_t rgb)
@@ -76,6 +96,11 @@ void render_draw_rect(rect_t rect, rgb_t rgb)
   SDL_RenderDrawRect(render.render_obj, &(SDL_Rect){ rect.x, rect.y, rect.w, rect.h });
 
   SDL_SetRenderDrawColor(render.render_obj, prev.r, prev.g, prev.b, prev_alpha);
+}
+
+void render_render_board(Board* b)
+{
+  assets_render_board(b, render.render_obj);
 }
 
 void render_clear()

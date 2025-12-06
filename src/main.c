@@ -2,17 +2,21 @@
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 
-#include "render.h"
+#include "render/render.h"
+#include "core/board.h"
 
 int main(int argc, char *argv[])
 {
+  SDL_Event event;
+  bool running = true;
+  Board board;
+
   if(render_init() != 0)
   {
     return -1;
   }
 
-  SDL_Event event;
-  bool running = true;
+  board_init(&board);
 
   while(running)
   {
@@ -37,6 +41,8 @@ int main(int argc, char *argv[])
           render_fill_rect((rect_t){ x * 80, y * 80, 80, 80 }, (rgb_t){ 224, 216, 196 });
       }
     }
+
+    render_render_board(&board);
 
     render_execute();
 

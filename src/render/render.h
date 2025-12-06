@@ -5,6 +5,7 @@
 #define WINDOW_HEIGHT 640
 
 #include <stdint.h>
+#include "../core/board.h"
 
 typedef struct
 {
@@ -17,8 +18,11 @@ typedef struct
 } rgb_t;
 
 int render_init();
+void render_quit();
 void render_fill_rect(rect_t rect, rgb_t rgb);
 void render_draw_rect(rect_t rect, rgb_t rgb);
+
+void render_render_board(Board* b);
 
 void render_clear();
 void render_execute();
